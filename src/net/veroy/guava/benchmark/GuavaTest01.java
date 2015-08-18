@@ -1,5 +1,7 @@
 package net.veroy.guava.benchmark;
 
+import net.veroy.guava.benchmark.ObjectRecord;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+// import java.lang.String.split;
 
 public class GuavaTest01 {
 
@@ -48,12 +51,19 @@ public class GuavaTest01 {
             int i = 0;
             String line;
             try ( // TODO hardcoded filename
-                  InputStream fis = new FileInputStream("_201_compress-SHORT.trace");
+                  // InputStream fis = new FileInputStream( filename );
+                  InputStream fis = new FileInputStream("fop-SHORT-20M.trace");
                   InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-                  BufferedReader br = new BufferedReader(isr);
+                  BufferedReader bufreader = new BufferedReader(isr);
             ) {
-                while ((line = br.readLine()) != null) {
+                while ((line = bufreader.readLine()) != null) {
                     // Deal with the line
+                    String[] fields = line.split(" ");
+                    // System.out.println("[" + fields[0] + "]");
+                    if (isAllocation(fields[0])) {
+                        ObjectRecord rec = parseAllocation( fields );
+                    }
+
                     i += 1;
                     if (i % 100000 == 1) {
                         System.out.print(".");
@@ -65,5 +75,14 @@ public class GuavaTest01 {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
         }
+    }
+
+    private static boolean isAllocation( String op ) {
+        return (op.equals("A") || op.equals("N") || op.equals("P") || op.equals("I"));
+    }
+
+    private static ObjectRecord parseAllocation( String[] fields ) {
+        System.out.println("X");
+        return new ObjectRecord();
     }
 }
