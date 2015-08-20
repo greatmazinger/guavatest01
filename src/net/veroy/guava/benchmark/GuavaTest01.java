@@ -45,7 +45,8 @@ public class GuavaTest01 {
             stmt.executeUpdate(sql);
             stmt.close();
             // TODO processInput( args[0] );
-            processInput( "_201_compress-SHORT.trace" );
+            // TODO hardcoded filename
+            processInput( "fop-SHORT-20M-02.trace" );
             conn.close();
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -77,20 +78,19 @@ public class GuavaTest01 {
         int allocTime = newrec.get_allocTime();
         int deathTime = newrec.get_deathTime();
         String type = newrec.get_type();
-        ResultSet rs = stmt.executeQuery( String.format( "INSERT OR REPLACE * INTO HEAP " +
-                                                         "(objid,age,alloctime,deathtime,type) " +
-                                                         " VALUES (%d,%d,%d,%d,%s);",
-                                                         objId, age, allocTime, deathTime, type ) );
+        stmt.executeUpdate( String.format( "INSERT OR REPLACE INTO HEAP " +
+                                           "(objid,age,alloctime,deathtime,type) " +
+                                           " VALUES (%d,%d,%d,%d,'%s');",
+                                           objId, age, allocTime, deathTime, type ) );
         return true;
     }
 
-    private static void processInput( String filename ) {
+    private static void processInput( String filename ) throws SQLException, ExecutionException {
         try {
             int i = 0;
             String line;
-            try ( // TODO hardcoded filename
-                  // InputStream fis = new FileInputStream( filename );
-                  InputStream fis = new FileInputStream("fop-SHORT-20M.trace");
+            try (
+                  InputStream fis = new FileInputStream( filename );
                   InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
                   BufferedReader bufreader = new BufferedReader(isr);
             ) {
@@ -100,7 +100,21 @@ public class GuavaTest01 {
                     String[] fields = line.split(" ");
                     if (isAllocation(fields[0])) {
                         ObjectRecord rec = parseAllocation( fields, timeByMethod );
+                        try {
+							putIntoDB( rec );
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+                            continue;
+						}
                         int objId = rec.get_objId();
+                        ObjectRecord tmprec = cache.get( objId,
+                            new Callable<ObjectRecord>() {
+                                public ObjectRecord call() throws SQLException {
+                                    return getFromDB( objId );
+                                }
+                            }
+                        );
                     }
 
                     i += 1;
