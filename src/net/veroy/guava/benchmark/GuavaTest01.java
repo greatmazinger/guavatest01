@@ -111,7 +111,7 @@ public class GuavaTest01 {
                         ObjectRecord tmprec = cache.get( objId,
                             new Callable<ObjectRecord>() {
                                 public ObjectRecord call() throws SQLException {
-                                    return getFromDB( objId );
+                                    return rec;
                                 }
                             }
                         );
