@@ -14,4 +14,15 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<filteredResources>
+		<filter>
+			<id>1440102130265</id>
+			<name></name>
+			<type>5</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-true-.*swp</arguments>
+			</matcher>
+		</filter>
+	</filteredResources>
 </projectDescription>
