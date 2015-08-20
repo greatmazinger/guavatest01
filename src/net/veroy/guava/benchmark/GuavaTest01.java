@@ -37,8 +37,7 @@ public class GuavaTest01 {
             String sql = "DROP TABLE IF EXISTS HEAP";
             stmt.executeUpdate(sql);
             sql = "CREATE TABLE HEAP" +
-                  "( id INT PRIMARY KEY     NOT NULL," +
-                  "  objid          INT     NOT NULL, " +
+                  "( objid INT PRIMARY KEY  NOT NULL," +
                   "  age            INT     NOT NULL, " +
                   "  alloctime      INT     NOT NULL, " +
                   "  deathtime      INT, " +
@@ -64,11 +63,25 @@ public class GuavaTest01 {
             objrec.set_age( rs.getInt("age") );
             objrec.set_allocTime( rs.getInt("alloctime") );
             objrec.set_deathTime( rs.getInt("deathtime") );
-            objrec.set_myType( rs.getString("type") );
+            objrec.set_type( rs.getString("type") );
         } else {
             objrec.set_objId( objId );
         }
         return objrec;
+    }
+
+    private static boolean putIntoDB( ObjectRecord newrec ) throws SQLException {
+        Statement stmt = conn.createStatement();
+        int objId = newrec.get_objId();
+        int age = newrec.get_age();
+        int allocTime = newrec.get_allocTime();
+        int deathTime = newrec.get_deathTime();
+        String type = newrec.get_type();
+        ResultSet rs = stmt.executeQuery( String.format( "INSERT OR REPLACE * INTO HEAP " +
+                                                         "(objid,age,alloctime,deathtime,type) " +
+                                                         " VALUES (%d,%d,%d,%d,%s);",
+                                                         objId, age, allocTime, deathTime, type ) );
+        return true;
     }
 
     private static void processInput( String filename ) {
@@ -88,17 +101,6 @@ public class GuavaTest01 {
                     if (isAllocation(fields[0])) {
                         ObjectRecord rec = parseAllocation( fields, timeByMethod );
                         int objId = rec.get_objId();
-                        try {
-                            ObjectRecord dbrec = cache.get(objId, new Callable<ObjectRecord>() {
-                                @Override
-                                public ObjectRecord call() throws SQLException {
-                                    return getFromDB(objId);
-                                }
-                            });
-                        } catch (ExecutionException e) {
-                            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-                            System.err.println( "Continuing..." );
-                        }
                     }
 
                     i += 1;

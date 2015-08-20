@@ -6,7 +6,7 @@ public class ObjectRecord {
     private int _age;
     private int _allocTime;
     private int _deathTime;
-    private String _myType;
+    private String _type;
 
     public ObjectRecord( int myId,
                          int objId,
@@ -20,7 +20,7 @@ public class ObjectRecord {
         this._age = age;
         this._allocTime = allocTime;
         this._deathTime = deathTime;
-        this._myType = myType;
+        this._type = myType;
     }
 
     public ObjectRecord() {
@@ -30,7 +30,7 @@ public class ObjectRecord {
         this._age = 0;
         this._allocTime = 0;
         this._deathTime = 0;
-        this._myType = "None";
+        this._type = "None";
     }
 
     public int get_myId() {
@@ -63,11 +63,11 @@ public class ObjectRecord {
     public void set_deathTime(int _deathTime) {
         this._deathTime = _deathTime;
     }
-    public String get_myType() {
-        return _myType;
+    public String get_type() {
+        return _type;
     }
-    public void set_myType(String _myType) {
-        this._myType = _myType;
+    public void set_type(String _type) {
+        this._type = _type;
     }
 
 
