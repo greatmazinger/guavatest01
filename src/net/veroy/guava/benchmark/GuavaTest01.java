@@ -108,13 +108,7 @@ public class GuavaTest01 {
                             continue;
 						}
                         int objId = rec.get_objId();
-                        ObjectRecord tmprec = cache.get( objId,
-                            new Callable<ObjectRecord>() {
-                                public ObjectRecord call() throws SQLException {
-                                    return rec;
-                                }
-                            }
-                        );
+                        cache.put( objId, rec );
                     }
 
                     i += 1;
