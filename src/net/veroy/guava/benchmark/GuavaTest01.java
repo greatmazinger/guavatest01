@@ -13,6 +13,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -89,6 +90,7 @@ public class GuavaTest01 {
         try {
             int i = 0;
             String line;
+            ArrayList<UpdateRecord> updateList = new ArrayList<UpdateRecord>();
             try (
                   InputStream fis = (!filename.isEmpty()) ? new FileInputStream( filename )
                                                           : System.in;
@@ -111,6 +113,10 @@ public class GuavaTest01 {
                         int objId = rec.get_objId();
                         cache.put( objId, rec );
                     }
+                    else if (isUpdate(fields[0])) {
+                        UpdateRecord rec = parseUpdate( fields, timeByMethod );
+                        updateList.add(rec);
+                    }
 
                     i += 1;
                     if (i % 100000 == 1) {
@@ -123,6 +129,10 @@ public class GuavaTest01 {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
         }
+    }
+
+    private static boolean isUpdate(String op) {
+        return op.equals("U");
     }
 
     private static boolean isAllocation( String op ) {
@@ -144,5 +154,19 @@ public class GuavaTest01 {
                                  timeByMethod,
                                  0, // Unknown at this point
                                  type );
+    }
+
+    private static UpdateRecord parseUpdate( String[] fields, int timeByMethod ) {
+        int oldTgtId = Integer.parseInt( fields[1], 16 );
+        int objId = Integer.parseInt( fields[2], 16 );
+        int newTgtId = Integer.parseInt( fields[3], 16 );
+        int fieldId = Integer.parseInt( fields[4], 16 );
+        int threadId = Integer.parseInt( fields[5], 16 );
+        return new UpdateRecord( objId,
+                                 oldTgtId,
+                                 newTgtId,
+                                 fieldId,
+                                 threadId,
+                                 timeByMethod );
     }
 }
