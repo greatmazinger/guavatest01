@@ -44,9 +44,9 @@ public class GuavaTest01 {
                   "  type           CHAR(4096) )";
             stmt.executeUpdate(sql);
             stmt.close();
-            // TODO processInput( args[0] );
+            String filename = (args.length > 0) ? args[0] : "";
             // TODO hardcoded filename
-            processInput( "fop-SHORT-20M-02.trace" );
+            processInput( filename );
             conn.close();
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -90,7 +90,8 @@ public class GuavaTest01 {
             int i = 0;
             String line;
             try (
-                  InputStream fis = new FileInputStream( filename );
+                  InputStream fis = (!filename.isEmpty()) ? new FileInputStream( filename )
+                                                          : System.in;
                   InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
                   BufferedReader bufreader = new BufferedReader(isr);
             ) {
