@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -160,7 +161,21 @@ public class GuavaTest01 {
         int oldTgtId = Integer.parseInt( fields[1], 16 );
         int objId = Integer.parseInt( fields[2], 16 );
         int newTgtId = Integer.parseInt( fields[3], 16 );
-        int fieldId = Integer.parseInt( fields[4], 16 );
+        int fieldId = 0;
+        try {
+            fieldId = Integer.parseInt( fields[4], 16 );
+        }
+        catch ( Exception e ) {
+            try {
+                System.out.println( String.format("parseInt failed: %d -> %s", objId, fields[4]) );
+                BigInteger tmp = new BigInteger( fields[4], 16 );
+                fieldId = tmp.intValue();
+            }
+            catch ( Exception e2 ) {
+                System.err.println( e2.getClass().getName() + ": " + e2.getMessage() );
+                System.exit(0);
+            }
+        }
         int threadId = Integer.parseInt( fields[5], 16 );
         return new UpdateRecord( objId,
                                  oldTgtId,
