@@ -26,7 +26,6 @@ public class GuavaTest01 {
     private static Connection conn;
 
     public static void main(String[] args) {
-        // TODO Hard-coded filepath for now TODO
         cache = CacheBuilder.newBuilder()
             .maximumSize(140000000)
             .build();
@@ -47,7 +46,6 @@ public class GuavaTest01 {
             stmt.executeUpdate(sql);
             stmt.close();
             String filename = (args.length > 0) ? args[0] : "";
-            // TODO hardcoded filename
             processInput( filename );
             conn.close();
         } catch ( Exception e ) {
@@ -107,7 +105,6 @@ public class GuavaTest01 {
                         try {
 							putIntoDB( rec );
 						} catch (SQLException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
                             continue;
 						}
@@ -120,7 +117,7 @@ public class GuavaTest01 {
                     }
 
                     i += 1;
-                    if (i % 100000 == 1) {
+                    if (i % 10000 == 1) {
                         System.out.print(".");
                     } 
                 }
@@ -141,7 +138,6 @@ public class GuavaTest01 {
     }
 
     private static ObjectRecord parseAllocation( String[] fields, int timeByMethod ) {
-        // System.out.println("[" + fields[0] + "]");
         int objId = Integer.parseInt( fields[1], 16 );
         String type = fields[3];
         // UNUSED right now:
